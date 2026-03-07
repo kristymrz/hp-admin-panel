@@ -1,16 +1,11 @@
 import ImageCard from "./ImageCard";
+import type { ImageRow } from "./ImageDetailModal";
 
-type ImageItem = {
-  id: number;
-  title: string;
-  captionSnippet: string;
+type Props = {
+  items: ImageRow[];
 };
 
-type ImageGridProps = {
-  items: ImageItem[];
-};
-
-export default function ImageGrid({ items }: ImageGridProps) {
+export default function ImageGrid({ items }: Props) {
   if (items.length === 0) {
     return (
       <div className="flex items-center justify-center h-48 bg-[#0f2236] rounded-lg border-2 border-dashed border-[#099ff6]/20">
@@ -24,7 +19,7 @@ export default function ImageGrid({ items }: ImageGridProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
       {items.map((item) => (
-        <ImageCard key={item.id} title={item.title} captionSnippet={item.captionSnippet} />
+        <ImageCard key={item.id} image={item} />
       ))}
     </div>
   );

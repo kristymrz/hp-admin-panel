@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { signOut } from "@/app/actions/auth";
 
 export default async function AdminHeader() {
   const supabase = await createClient();
@@ -15,9 +16,11 @@ export default async function AdminHeader() {
 
       <div className="flex items-center gap-4">
         <span className="text-[#e8d5a3]/80 text-lg">Welcome, {user?.email}</span>
-        <button className="px-4 py-1.5 text-base text-[#e8d5a3] border border-[#e8d5a3]/40 rounded hover:bg-[#e8d5a3]/10 hover:border-[#e8d5a3]/70 transition-colors cursor-pointer">
-          Sign Out
-        </button>
+        <form action={signOut}>
+          <button type="submit" className="px-4 py-1.5 text-base text-[#e8d5a3] border border-[#e8d5a3]/40 rounded hover:bg-[#e8d5a3]/10 hover:border-[#e8d5a3]/70 transition-colors cursor-pointer">
+            Sign Out
+          </button>
+        </form>
       </div>
     </header>
   );

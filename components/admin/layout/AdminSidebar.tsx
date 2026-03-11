@@ -4,10 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navLinks = [
-  { label: "Dashboard", href: "/" },
-  { label: "Profiles",  href: "/profiles" },
-  { label: "Images",    href: "/images" },
-  { label: "Captions",  href: "/captions" },
+  { label: "Dashboard",       href: "/" },
+  { label: "Profiles",        href: "/profiles" },
+  { label: "Images",          href: "/images" },
+  { label: "Captions",        href: "/captions" },
+  { label: "Humor Flavors",   href: "/humor-flavors" },
+  { label: "LLMs",            href: "/llms" },
+  { label: "Terms",           href: "/terms" },
+  { label: "Sign Up Domains", href: "/sign-up-domains" },
+  { label: "Email Addresses", href: "/email-addresses" },
 ];
 
 export default function AdminSidebar() {

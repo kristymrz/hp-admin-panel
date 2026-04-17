@@ -27,7 +27,11 @@ export default async function DashboardPage() {
   const supabase = await createClient();
   const weekBuckets = getWeeklyBuckets(NUM_WEEKS);
 
-  const [statResults, captionWeekResults, imageWeekResults, recentImagesResult, topCaptionsResult] =
+  const currentWeekStart = new Date();
+  currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+  currentWeekStart.setHours(0, 0, 0, 0);
+
+  const [statResults, captionWeekResults, imageWeekResults, recentImagesResult, topCaptionsResult, topCaptionsThisWeekResult] =
     await Promise.all([
       Promise.all([
         supabase.from("profiles").select("*", { count: "exact", head: true }),
@@ -57,10 +61,16 @@ export default async function DashboardPage() {
         .from("images")
         .select("id, url")
         .order("created_datetime_utc", { ascending: false })
-        .limit(8),
+        .limit(24),
       supabase
         .from("captions")
         .select("id, content, like_count, images!image_id(url)")
+        .order("like_count", { ascending: false })
+        .limit(12),
+      supabase
+        .from("captions")
+        .select("id, content, like_count, images!image_id(url)")
+        .gte("created_datetime_utc", currentWeekStart.toISOString())
         .order("like_count", { ascending: false })
         .limit(12),
     ]);
@@ -98,6 +108,15 @@ export default async function DashboardPage() {
     score: caption.like_count ?? 0,
   }));
 
+  // Top captions created this week by like_count
+  const weeklyLeaderboardEntries = (topCaptionsThisWeekResult.data ?? []).map((caption) => ({
+    id: caption.id,
+    content: caption.content ?? null,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    image_url: (caption.images as any)?.url ?? null,
+    score: caption.like_count ?? 0,
+  }));
+
   return (
     <div className="flex flex-col gap-8">
       <h2 className="text-[#e8d5a3] text-2xl font-semibold font-[family-name:var(--font-pixelify-sans)] tracking-wide">
@@ -118,6 +137,10 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
         <RecentImagesStrip images={recentImages} />
         <CaptionLeaderboard entries={leaderboardEntries} />
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+        <CaptionLeaderboard entries={weeklyLeaderboardEntries} title="Top Captions This Week" />
       </div>
     </div>
   );

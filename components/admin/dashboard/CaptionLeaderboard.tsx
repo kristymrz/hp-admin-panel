@@ -5,16 +5,17 @@ import CaptionLeaderboardModal, { type LeaderboardEntry } from "./CaptionLeaderb
 
 type Props = {
   entries: LeaderboardEntry[];
+  title?: string;
 };
 
-export default function CaptionLeaderboard({ entries }: Props) {
+export default function CaptionLeaderboard({ entries, title = "Top Captions Overall" }: Props) {
   const [selected, setSelected] = useState<{ entry: LeaderboardEntry; rank: number } | null>(null);
 
   return (
     <>
       <div className="bg-[#0f2236] rounded-lg shadow-lg p-6 flex flex-col gap-4 font-[family-name:var(--font-pixelify-sans)]">
         <span className="text-[#e8d5a3]/60 text-sm uppercase tracking-widest">
-          Top Captions
+          {title}
         </span>
 
         <div className="overflow-x-auto">

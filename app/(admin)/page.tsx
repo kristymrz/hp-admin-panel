@@ -139,8 +139,10 @@ export default async function DashboardPage() {
         <CaptionLeaderboard entries={leaderboardEntries} />
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-        <CaptionLeaderboard entries={weeklyLeaderboardEntries} title="Top Captions This Week" />
+      <div className="flex justify-center">
+        <div className="w-full xl:w-1/2">
+          <CaptionLeaderboard entries={weeklyLeaderboardEntries} title="Top Captions This Week" />
+        </div>
       </div>
     </div>
   );

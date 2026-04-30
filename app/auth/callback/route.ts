@@ -1,5 +1,5 @@
+import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -9,7 +9,28 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/login?error=auth_failed`);
   }
 
-  const supabase = await createClient();
+  // Build the response up front so cookie writes land on the object we return.
+  let response = NextResponse.redirect(`${origin}/`);
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          );
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
+        },
+      },
+    }
+  );
 
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
@@ -31,9 +52,9 @@ export async function GET(request: NextRequest) {
     .eq("id", user.id)
     .single();
 
-  if (profile?.is_superadmin === true) {
-    return NextResponse.redirect(`${origin}/`);
+  if (profile?.is_superadmin !== true) {
+    return NextResponse.redirect(`${origin}/unauthorized`);
   }
 
-  return NextResponse.redirect(`${origin}/unauthorized`);
+  return response;
 }
